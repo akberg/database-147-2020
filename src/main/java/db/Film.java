@@ -2,6 +2,7 @@
 package db;
 
 import java.sql.*;
+import java.sql.Date;
 import java.util.*;
 
 public class Film extends ActiveDomainObject{
@@ -9,7 +10,7 @@ public class Film extends ActiveDomainObject{
     private int series_id;
     private String title;
     private int pub_year;
-    private String pub_date;
+    private Date pub_date;
     private String storyline;
     private int runlength;
 

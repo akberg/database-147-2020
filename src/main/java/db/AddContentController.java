@@ -50,7 +50,7 @@ public class AddContentController extends DBConn {
 
     public void insertPerson(String name, String country, Date birthdate) throws SQLException {
         PreparedStatement stmt = conn.prepareStatement(
-            "insert into Film (name, country, birthdate) values (?, ?, ?);"
+            "insert into Person (full_name, country, birth_date) values (?, ?, ?);"
         );
         stmt.setString(1, name);
         stmt.setString(2, country);

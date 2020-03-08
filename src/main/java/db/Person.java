@@ -4,13 +4,13 @@ import java.sql.*;
 
 public class Person extends ActiveDomainObject {
     private int person_id;
-    private String name;
+    private String full_name;
     private Date birthdate;
     private String country;
 
     public Person(int person_id, String name, Date birthdate, String country) {
         this.person_id = person_id;
-        this.name = name;
+        this.full_name = name;
         this.birthdate = birthdate;
         this.country = country;
     }
@@ -28,11 +28,11 @@ public class Person extends ActiveDomainObject {
     }
 
     public String getName() {
-        return name;
+        return full_name;
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.full_name = name;
     }
 
     public Date getBirthdate() {
@@ -57,13 +57,13 @@ public class Person extends ActiveDomainObject {
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery("select * from Person where person_id=" + person_id);
             while (rs.next()) {
-                name =  rs.getString("name");
+                full_name =  rs.getString("full_name");
                 country = rs.getString("country");
-                birthdate = rs.getDate("birthdate");
+                birthdate = rs.getDate("birth_date");
             }
 
         } catch (Exception e) {
-            System.out.println("db error during select of user= "+e);
+            System.out.println("db error during select of person= "+e);
             return;
         }
     }
@@ -77,7 +77,7 @@ public class Person extends ActiveDomainObject {
     public void save(Connection conn) {
         try {
             Statement stmt = conn.createStatement(); 
-            ResultSet rs = stmt.executeQuery("update Person set name="+name+"where person_id="+person_id);
+            ResultSet rs = stmt.executeQuery("update Person set full_name="+full_name+"where person_id="+person_id);
         } catch (Exception e) {
             System.out.println("db error during update of bruker="+e);
             return;

@@ -18,20 +18,20 @@ public final class App {
     public static void main(String[] args) {
         // Get db credentials
         Scanner in = new Scanner(System.in);
-        System.out.println("Host: ");
-        String dbHost = in.nextLine();
-        System.out.println("Database name: ");
-        String dbName = in.nextLine();
-        System.out.println("Username: ");
-        String dbUser = in.nextLine();
-        System.out.println("Password: ");
-        String dbPassword = in.nextLine();
+        System.out.println("Host: localhost");
+        String dbHost = "localhost"; //in.nextLine();
+        System.out.println("Database name: moviedb");
+        String dbName = "moviedb"; //in.nextLine();
+        System.out.println("Username: root");
+        String dbUser = "root"; //in.nextLine();
+        System.out.println("Password: ****");
+        String dbPassword = "3619"; //in.nextLine();
         in.close();
-
         AddContentController ctrl = new AddContentController(dbHost, dbName, dbUser, dbPassword);
-        try {        
+        try {
+            System.out.println("Inserting value");        
             ctrl.insertPerson("Inger-Ane", "Norway", new Date(0));
-            
+
         } catch (SQLException e) {
             System.out.println("db query failed: "+e);
         }

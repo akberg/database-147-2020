@@ -30,9 +30,10 @@ public final class App {
         AddContentController ctrl = new AddContentController(dbHost, dbName, dbUser, dbPassword);
         try {
             System.out.println("Inserting value");        
-            ctrl.insertPerson("Inger-Ane", "Norway", new Date(0));
+            //ctrl.insertPerson("Inger-Ane", "Norway", new Date(0));
+            ctrl.testSeriesCompanyFilm();
 
-        } catch (SQLException e) {
+        } catch (Exception e) {
             System.out.println("db query failed: "+e);
         }
 

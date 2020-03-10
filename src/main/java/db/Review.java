@@ -3,50 +3,28 @@ package db;
 import java.sql.*;
 import java.util.*;
 
-public class Review extends ActiveDomainObject {
-    private int film_id;
-    private int pid;
+public class Review {
+    private Film film;
+    private User user;
     private int rating;
     private String comment;
 
-    public Review (int pid, int film_id, int rating, String comment) {
-        this.pid = pid;
-        this.film_id = film_id;
+    public Review (Film film, User user, int rating, String comment) {
+        this.film = film;
+        this.user = user;
         this.rating = rating;
         this.comment = comment;
     }
-    public int getFilmId () {
-        return this.film_id;
+    public Film getFilm() {
+        return this.film;
     }
-    public int getPid () {
-        return this.pid;
+    public User getUser() {
+        return this.user;
     }
-    public int getRating () {
+    public int getRating() {
         return this.rating;
     }
     public String getComment(){
         return this.comment;
     }
-
-    @Override
-    public void initialize(Connection conn) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void refresh(Connection conn) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void save(Connection conn) {
-        // TODO Auto-generated method stub
-
-    }
-    
-    
-
-
 }

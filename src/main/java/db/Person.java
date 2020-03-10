@@ -1,31 +1,35 @@
 package db;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.NoSuchElementException;
 
 public class Person extends ActiveDomainObject {
-    private int person_id;
     private String full_name;
     private Date birthdate;
     private String country;
 
-    public Person(int person_id, String name, Date birthdate, String country) {
-        this.person_id = person_id;
+    private static int NEXT_ID = 1;
+
+    public Person(int id, String name, Date birthdate, String country) {
+        this.ID = id;
         this.full_name = name;
         this.birthdate = birthdate;
         this.country = country;
     }
+    
+    public Person(String name, Date birthdate, String country) {
+        this(-1, name, birthdate, country);
+    }
 
-    public Person(int person_id) {
-        this.person_id = person_id;
+    public Person(int id) {
+        this.ID = id;
     };
 
-    public int getPerson_id() {
-        return person_id;
-    }
-
-    public void setPerson_id(int person_id) {
-        this.person_id = person_id;
-    }
+    public Person() {
+        this.ID = -1;
+    };
 
     public String getName() {
         return full_name;
@@ -51,38 +55,116 @@ public class Person extends ActiveDomainObject {
         this.country = country;
     }
 
-    @Override
-    public void initialize(Connection conn) {
+    /**
+     * Get all movies where person has appeared in an acting role
+     * @return
+     */
+    public List<Role> getFilmsAsActor() {
+        List<Role> res = new ArrayList<>();
+        try {
+            PreparedStatement stmt = conn.prepareStatement("select * from RoleBy where person_id=" + this.ID);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                Film f = Film.get("film_id=" + rs.getInt("film_id"));
+                res.add(
+                    new Role(f, this, rs.getString("role"))
+                );
+            }
+        } catch (SQLException e) {
+            System.out.println("Feil under databaseoperasjon: " + e);
+        }
+        return res;
+    }
+
+    /**
+     * Get all movies where person has appeared in as director or writer
+     * Called by the public methods getFilmAsDirector and getFilmAsWriter
+     * @table director or writer
+     * @return
+     */
+    private List<Film> getFilm(String table) {
+        List<Film> res = new ArrayList<>();
+        try {
+            PreparedStatement stmt = conn.prepareStatement("select * from " + table + " where person_id=" + this.ID);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                Film f = Film.get("film_id=" + rs.getInt("film_id"));
+                res.add(f);
+            }
+        } catch (SQLException e) {
+            System.out.println("Feil under databaseoperasjon: " + e);
+        }
+        return res;
+    }
+    public List<Film> getFilmAsDirector() {
+        return this.getFilm("DirectedBy");
+    }
+    public List<Film> getFilmAsWriter() {
+        return this.getFilm("WrittenBy");
+    }
+
+    /**
+     * Get a Person object matching the given constraints
+     * @param constraint an expression e.g. "person_id=1"
+     * @return object of type Person
+     * @throws NoSuchElementException if there were no or mutliple matches
+     * @throws SQLException database error
+     */
+    public static Person get(String constraint) throws NoSuchElementException, SQLException {
+        Person res;
         try {
             Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery("select * from Person where person_id=" + person_id);
-            while (rs.next()) {
-                full_name =  rs.getString("full_name");
-                country = rs.getString("country");
-                birthdate = rs.getDate("birth_date");
+            // Select all from an object satisfying contstraints
+            ResultSet rs = stmt.executeQuery("select * from Person where " + constraint);
+
+            if (!rs.next()) {
+                throw new NoSuchElementException("Ingen treff.");
+            } 
+            res = new Person(
+                rs.getInt("person_id"),
+                rs.getString("full_name"),
+                rs.getDate("birth_date"),
+                rs.getString("country")
+            );
+
+            if (rs.next()) {
+                throw new NoSuchElementException("Mer enn ett treff!");
             }
 
-        } catch (Exception e) {
-            System.out.println("db error during select of person= "+e);
-            return;
+            return res;
+
+        } catch (SQLException e) {
+            System.out.println("Feil under databaseoperasjon "+e);
+            return null;
         }
     }
 
     @Override
-    public void refresh(Connection conn) {
-        initialize(conn);
-    }
-
-    @Override
-    public void save(Connection conn) {
+    public void save() {
         try {
-            Statement stmt = conn.createStatement(); 
-            ResultSet rs = stmt.executeQuery("update Person set full_name="+full_name+"where person_id="+person_id);
+            PreparedStatement stmt;
+            if (ID == -1) {
+                stmt = conn.prepareStatement("insert into Person (full_name, birth_date, country) values (?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+            } else {
+                // Only update if object already exists in db
+                stmt = conn.prepareStatement("update Person set full_name=?, birth_date=?, country=? where person_id=" + this.ID);
+            }
+            stmt.setString(1, this.full_name);
+            stmt.setDate(2, this.birthdate);
+            stmt.setString(3, this.country);
+            stmt.executeUpdate();
+            conn.commit();
+            
+            if (ID == -1) {
+                // Update with autogenerated pk
+                ResultSet rs = stmt.getGeneratedKeys();
+                rs.next();
+                this.ID = rs.getInt(1);
+            }
         } catch (Exception e) {
             System.out.println("db error during update of bruker="+e);
-            return;
         }
     }
-
-    
 }

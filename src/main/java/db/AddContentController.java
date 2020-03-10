@@ -22,6 +22,7 @@ public class AddContentController extends DBConn {
             System.out.println("db error during setAuoCommit of LagAvtaleCtrl="+e);
             return;
         }
+        ActiveDomainObject.setConnection(conn);
     }
 
     /**
@@ -49,20 +50,47 @@ public class AddContentController extends DBConn {
     // }
 
     public void insertPerson(String name, String country, Date birthdate) throws SQLException {
-        PreparedStatement stmt = conn.prepareStatement(
-            "insert into Person (full_name, country, birth_date) values (?, ?, ?);"
-        );
-        stmt.setString(1, name);
-        stmt.setString(2, country);
-        stmt.setDate(3, birthdate);
-        stmt.execute();
-        conn.commit();
+        Person p = new Person(name, birthdate, country);
+        p.save();
+        // PreparedStatement stmt = conn.prepareStatement(
+        //     "insert into Person (full_name, country, birth_date) values (?, ?, ?);"
+        // );
+        // stmt.setString(1, name);
+        // stmt.setString(2, country);
+        // stmt.setDate(3, birthdate);
+        // stmt.execute();
+        // conn.commit();
     }
 
     public Person getPerson(int id) throws SQLException {
-        Person p = new Person(id);
-        p.initialize(conn);
+        Person p = Person.get("person_id=" + id);
         return p;
+    }
+
+    public void insertCompany(String name, String country, String address, String url) {
+        Company c = new Company(name, country, address, url);
+        c.save();
+    }
+
+    public void insertSeries(String name, Company comp) {
+        Series s = new Series(comp.getID(), name);
+        s.save();
+    }
+
+    public void testSeriesCompanyFilm() {
+        Company c = new Company("Fox", "USA", "20th Fox st", "fox.com");
+        Series s;
+        try {
+            s = new Series(c.getID(), "Frozen 2");
+            System.out.println("FEIL!!");
+        } catch (IllegalStateException e) {
+            System.out.println(e);
+            c.save();
+            s = new Series(c.getID(), "Frozen 2");
+            s.save();
+        }
+        Film f = new Film(s, s.getTitle(), 2019, new Date(119, 9, 10), "Dobbelt så frossent!", 112);
+        f.save();
     }
 
     public void finish() {

@@ -6,7 +6,6 @@ import java.util.*;
 public class DirectedBy extends ActiveDomainObject {
     private int film_id;
     private int pid;
-    private String role;
 
     public DirectedBy (int pid, int film_id) {
         this.pid = pid;
@@ -18,19 +17,18 @@ public class DirectedBy extends ActiveDomainObject {
     public int getPid () {
         return this.pid;
     }
-    public String getRole () {
-        return this.role;
-    }
 
     @Override
     public void initialize(Connection conn) {
         // TODO Auto-generated method stub
+        initialize (conn);
 
     }
 
     @Override
     public void refresh(Connection conn) {
         // TODO Auto-generated method stub
+        initialize (conn);
 
     }
 

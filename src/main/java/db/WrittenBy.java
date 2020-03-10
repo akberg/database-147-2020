@@ -22,11 +22,13 @@ public class WrittenBy extends ActiveDomainObject {
     public void initialize(Connection conn) {
         // TODO Auto-generated method stub
 
+
     }
 
     @Override
     public void refresh(Connection conn) {
         // TODO Auto-generated method stub
+        initialize (conn);
 
     }
 

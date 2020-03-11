@@ -4,7 +4,7 @@ import java.sql.*;
 import java.sql.Date;
 import java.util.*;
 
-public class AddContentController extends DBConn {
+public class ContentController extends DBConn {
 
     /**
      * Create controller with a conected host to add content
@@ -13,7 +13,7 @@ public class AddContentController extends DBConn {
      * @param user
      * @param password
      */
-    public AddContentController (String host, String db, String user, String password) {
+    public ContentController (String host, String db, String user, String password) {
         connect(host, db, user, password);
         // Let creating a film be one transaction
         try {
@@ -53,7 +53,7 @@ public class AddContentController extends DBConn {
         Person p = new Person(name, birthdate, country);
         p.save();
         // PreparedStatement stmt = conn.prepareStatement(
-        //     "insert into Person (full_name, country, birth_date) values (?, ?, ?);"
+        //     "insert into Person (full_name, country, birthdate) values (?, ?, ?);"
         // );
         // stmt.setString(1, name);
         // stmt.setString(2, country);
@@ -78,19 +78,30 @@ public class AddContentController extends DBConn {
     }
 
     public void testSeriesCompanyFilm() {
-        Company c = new Company("Fox", "USA", "20th Fox st", "fox.com");
-        Series s;
-        try {
-            s = new Series(c.getID(), "Frozen 2");
-            System.out.println("FEIL!!");
-        } catch (IllegalStateException e) {
-            System.out.println(e);
-            c.save();
-            s = new Series(c.getID(), "Frozen 2");
-            s.save();
-        }
-        Film f = new Film(s, s.getTitle(), 2019, new Date(119, 9, 10), "Dobbelt så frossent!", 112);
+        Film f = new Film("Frozen 2", 2019, new Date(119, 9, 10), "Dobbelt så frossent!", 112, Company.get("comp_name='Disney'").getID());
         f.save();
+    }
+
+    public void personLookup(String name) {
+        try {
+            Person p = Person.get("full_name='"+name+"'");
+            System.out.println("\n" + p.getName());
+            System.out.println("Født: " + p.getBirthdate());
+            System.out.println("Filmer:\n---------------------------------------------");
+            p.getFilmsAsActor().stream().forEach(r -> System.out.println(r.getRole() + "\t| " + r.getFilm().getTitle()));
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+
+    public void seriesLookup(String name) {
+        try {
+            Series s = Series.get("title='" + name + "'");
+            System.out.println("\n" + s.getTitle());
+            System.out.println("Eies av: " + s.getCompany().getName());
+
+            List<Film> episodes = Series.getEpisodes();
+        }
     }
 
     public void finish() {

@@ -1,6 +1,8 @@
 package db;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 public class Series extends ActiveDomainObject {
@@ -31,6 +33,10 @@ public class Series extends ActiveDomainObject {
         return comp_id;
     }
 
+    public Company getCompany() {
+        return Company.get("comp_id=" + comp_id);
+    }
+
     public void setComp_id(int comp_id) {
         this.comp_id = comp_id;
     }
@@ -41,6 +47,23 @@ public class Series extends ActiveDomainObject {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public List<Film> getEpisodes() {
+        // TODO: implement!
+        List<Film> res = new ArrayList<>();
+        try {
+            PreparedStatement stmt = conn.prepareStatement("select * from RoleBy where person_id=" + this.ID);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                Film f = Film.get("film_id=" + rs.getInt("film_id"));
+                res.add(f);
+            }
+        } catch (SQLException e) {
+            System.out.println("Feil under databaseoperasjon: " + e);
+        }
+        return res;
     }
 
     public static Series get(String constraint) {

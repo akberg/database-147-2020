@@ -5,6 +5,11 @@ import java.sql.*;
 import java.sql.Date;
 import java.util.*;
 
+/**
+ * Film objects represents a feature length movie or an episode
+ * Attributes that only the full series would have are managed
+ * in Series object
+ */
 public class Film extends ActiveDomainObject{
     private int series_id;
     private int pub_year;
@@ -18,7 +23,9 @@ public class Film extends ActiveDomainObject{
     private int season;
     private int episode;
 
-    public Film(int id, int series_id, String title, int pub_year, Date pub_date, String storyline, int runlength) {
+    // Constructors
+
+    public Film(int id, int series_id, String title, int pub_year, Date pub_date, String storyline, int runlength, boolean isEpisode, int season, int episode) {
         if (series_id == -1) {
             throw new IllegalStateException("Serie må være lagret i databasen.");
         } 
@@ -29,19 +36,45 @@ public class Film extends ActiveDomainObject{
         this.pub_date = pub_date;
         this.storyline = storyline;
         this.runlength = runlength;
+
+        this.isEpisode = isEpisode;
+        this.season = season;
+        this.episode = episode;
     }
 
-    public Film(int series_id, String title, int pub_year, Date pub_date, String storyline, int runlength) {
-        this(-1, series_id, title, pub_year, pub_date, storyline, runlength);
+    public Film(int series_id, String title, int pub_year, Date pub_date, String storyline, int runlength, boolean isEpisode, int season, int episode) {
+        this(-1, series_id, title, pub_year, pub_date, storyline, runlength, isEpisode, season, episode);
     }
 
-    public Film(int id, Series s, String title, int pub_year, Date pub_date, String storyline, int runlength) {
-        this(s.getID(), title, pub_year, pub_date, storyline, runlength);
+    // Movie
+    public Film(String title, int pub_year, Date pub_date, String storyline, int runlength, int comp_id) {
+        Series s = new Series(comp_id, title);
+        s.save();
+        this.ID = -1;
+        this.series_id = s.getID();
+        this.title = title;
+        this.pub_year = pub_year;
+        this.pub_date = pub_date;
+        this.storyline = storyline;
+        this.runlength = runlength;
+        
+        this.isEpisode = false;
+        this.season = 0;
+        this.episode = 0;
     }
+
+    // New episode
+    public Film(String title, int series_id, int season, int episode, int pub_year, Date pub_date, String storyline, int runlength) {
+        this(-1, series_id, title, pub_year, pub_date, storyline, runlength, true, season, episode);
+    }
+
+    // public Film(int id, Series s, String title, int pub_year, Date pub_date, String storyline, int runlength) {
+    //     this(s.getID(), title, pub_year, pub_date, storyline, runlength);
+    // }
     
-    public Film(Series s, String title, int pub_year, Date pub_date, String storyline, int runlength) {
-        this(-1, s.getID(), title, pub_year, pub_date, storyline, runlength);
-    }
+    // public Film(Series s, String title, int pub_year, Date pub_date, String storyline, int runlength) {
+    //     this(-1, s.getID(), title, pub_year, pub_date, storyline, runlength);
+    // }
 
     public Film(int id) {
         this.ID = id;
@@ -152,7 +185,7 @@ public class Film extends ActiveDomainObject{
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
-                Person p = new Person(rs.getInt("person_id"), rs.getString("name"), rs.getDate("birth_date"), rs.getString("country"));
+                Person p = new Person(rs.getInt("person_id"), rs.getString("name"), rs.getDate("birthdate"), rs.getString("country"));
                 res.add(p);
             }
         } catch (SQLException e) {
@@ -278,13 +311,18 @@ public class Film extends ActiveDomainObject{
             if (!rs.next()) {
                 throw new NoSuchElementException("Ingen treff.");
             }
+            int season = rs.getInt("season");
             res = new Film(
+                rs.getInt("film_id"),
                 rs.getInt("series_id"),
                 rs.getString("title"),
                 rs.getInt("pub_year"),
                 rs.getDate("pub_date"),
                 rs.getString("storyline"),
-                rs.getInt("runlength")
+                rs.getInt("runlength"),
+                season != 0,
+                season,
+                rs.getInt("episode")
             );
 
             if (rs.next()) {
@@ -306,15 +344,15 @@ public class Film extends ActiveDomainObject{
             if (ID == -1) {
                 stmt = conn.prepareStatement(
                     "insert into Film " +
-                    "(series_id, title, pub_year, pub_date, storyline, runlength) " +
-                    "values (?, ?, ?, ?, ?, ?)",
+                    "(series_id, title, pub_year, pub_date, storyline, runlength, season, episode) " +
+                    "values (?, ?, ?, ?, ?, ?, ?, ?)",
                     Statement.RETURN_GENERATED_KEYS
                 );
             } else {
                 // Only update if object already exists in db
                 stmt = conn.prepareStatement(
                     "update Film set " + 
-                    "series_id=?, title=?, pub_year=?, pub_date=?, storyline=?, runlength=? " +
+                    "series_id=?, title=?, pub_year=?, pub_date=?, storyline=?, runlength=?, season=?, episode=? " +
                     "where film_id=" + this.ID
                 );
             }
@@ -324,6 +362,8 @@ public class Film extends ActiveDomainObject{
             stmt.setDate(4, this.pub_date);
             stmt.setString(5, this.storyline);
             stmt.setInt(6, this.runlength);
+            stmt.setInt(7, this.season);
+            stmt.setInt(8, this.episode);
             stmt.executeUpdate();
             conn.commit();
 

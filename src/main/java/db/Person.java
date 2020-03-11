@@ -6,11 +6,12 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 public class Person extends ActiveDomainObject {
+
     private String full_name;
     private Date birthdate;
     private String country;
 
-    private static int NEXT_ID = 1;
+    // Constructors
 
     public Person(int id, String name, Date birthdate, String country) {
         this.ID = id;
@@ -30,6 +31,8 @@ public class Person extends ActiveDomainObject {
     public Person() {
         this.ID = -1;
     };
+
+    // Getters Setters
 
     public String getName() {
         return full_name;
@@ -68,7 +71,7 @@ public class Person extends ActiveDomainObject {
             while (rs.next()) {
                 Film f = Film.get("film_id=" + rs.getInt("film_id"));
                 res.add(
-                    new Role(f, this, rs.getString("role"))
+                    new Role(f, this, rs.getString("role_name"))
                 );
             }
         } catch (SQLException e) {
@@ -125,7 +128,7 @@ public class Person extends ActiveDomainObject {
             res = new Person(
                 rs.getInt("person_id"),
                 rs.getString("full_name"),
-                rs.getDate("birth_date"),
+                rs.getDate("birthdate"),
                 rs.getString("country")
             );
 
@@ -146,10 +149,10 @@ public class Person extends ActiveDomainObject {
         try {
             PreparedStatement stmt;
             if (ID == -1) {
-                stmt = conn.prepareStatement("insert into Person (full_name, birth_date, country) values (?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+                stmt = conn.prepareStatement("insert into Person (full_name, birthdate, country) values (?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
             } else {
                 // Only update if object already exists in db
-                stmt = conn.prepareStatement("update Person set full_name=?, birth_date=?, country=? where person_id=" + this.ID);
+                stmt = conn.prepareStatement("update Person set full_name=?, birthdate=?, country=? where person_id=" + this.ID);
             }
             stmt.setString(1, this.full_name);
             stmt.setDate(2, this.birthdate);

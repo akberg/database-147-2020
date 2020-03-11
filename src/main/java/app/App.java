@@ -27,11 +27,10 @@ public final class App {
         System.out.println("Password: ****");
         String dbPassword = "3619"; //in.nextLine();
         in.close();
-        AddContentController ctrl = new AddContentController(dbHost, dbName, dbUser, dbPassword);
+        ContentController ctrl = new ContentController(dbHost, dbName, dbUser, dbPassword);
         try {
-            System.out.println("Inserting value");        
-            //ctrl.insertPerson("Inger-Ane", "Norway", new Date(0));
-            ctrl.testSeriesCompanyFilm();
+            ctrl.personLookup("Kristoffer Joner");
+            ctrl.personLookup("Steve Carell");
 
         } catch (Exception e) {
             System.out.println("db query failed: "+e);

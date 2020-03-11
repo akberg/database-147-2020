@@ -25,11 +25,11 @@ public class Company extends ActiveDomainObject {
         this(-1, comp_name, country, address, url);
     }
 
-    public String getComp_name() {
+    public String getName() {
         return comp_name;
     }
 
-    public void setComp_name(String comp_name) {
+    public void setName(String comp_name) {
         this.comp_name = comp_name;
     }
 

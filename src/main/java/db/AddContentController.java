@@ -62,8 +62,8 @@ public class AddContentController extends DBConn {
         // conn.commit();
     }
 
-    public Person getPerson(int id) throws SQLException {
-        Person p = Person.get("person_id=" + id);
+    public Person getPerson(String name) throws SQLException {
+        Person p = Person.get("name=" + name);
         return p;
     }
 

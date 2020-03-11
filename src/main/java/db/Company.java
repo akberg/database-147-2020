@@ -17,7 +17,6 @@ public class Company extends ActiveDomainObject {
         this.address = address;
         this.url = url;
     }
-
     @Override
     public void initialize(Connection conn) {
         try {
@@ -34,6 +33,10 @@ public class Company extends ActiveDomainObject {
             System.out.println("db error during select of user= "+e);
             return;
         }
+    }
+
+    public static String getTopCompany() {
+        
     }
 
     @Override

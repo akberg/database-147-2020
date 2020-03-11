@@ -9,6 +9,7 @@ public class Series extends ActiveDomainObject {
 
     private int comp_id;
     private String title;
+    private Boolean movie = null;
 
     public Series(int id, int comp_id, String title) {
         this.ID = id;
@@ -27,6 +28,16 @@ public class Series extends ActiveDomainObject {
 
     public Series() {
         this.ID = -1;
+    }
+
+    public boolean isMovie() {
+        if (movie != null) {
+            return (boolean)movie;
+        } else {
+            List<Film> episodes = getEpisodes();
+            movie = episodes.size() == 1 && !episodes.get(0).isEpisode();
+            return (boolean)movie;
+        }
     }
 
     public int getComp_id() {
@@ -77,6 +88,7 @@ public class Series extends ActiveDomainObject {
             }
             res = new Series(
                 rs.getInt("series_id"),
+                rs.getInt("comp_id"),
                 rs.getString("title")
             );
 

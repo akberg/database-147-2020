@@ -82,44 +82,46 @@ public class ContentController extends DBConn {
         f.save();
     }
 
-    public void personLookup(String name) {
-        try {
-            Person p = Person.get("full_name='"+name+"'");
-            System.out.println("\n" + p.getName());
-            System.out.println("Født: " + p.getBirthdate());
-            System.out.println("Filmer:\n---------------------------------------------");
-            p.getFilmsAsActor().stream().forEach(r -> System.out.println(r.getRole() + "\t| " + r.getFilm().getTitle()));
-        } catch (Exception e) {
-            System.out.println(e);
-        }
+    public Person personLookup(String name) throws Exception {
+        Person p = Person.get("full_name='"+name+"'");
+        System.out.println("\n" + p.getName());
+        System.out.println("Født: " + p.getBirthdate());
+        System.out.println("Filmer:\n---------------------------------------------");
+        p.getFilmsAsActor().stream().forEach(r -> System.out.println(r.getRole() + "\t| " + r.getFilm().getTitle()));
+        return p;
     }
 
-    public void seriesLookup(String name) {
-        try {
-            Series s = Series.get("title='" + name + "'");
-            System.out.println("\n" + s.getTitle());
-            System.out.println("Eies av: " + s.getCompany().getName());
-
-            List<Film> episodes = s.getEpisodes();
-            if (episodes.isEmpty()) {
-                System.out.println("Ingen episoder ennå.");
-            }
-            else if (episodes.size() == 1 && !episodes.get(0).isEpisode()) {
-                Film f = episodes.get(0);
-                System.out.println("Lengde: " + f.getRunlength() + " min");
-                System.out.println("Utgitt: " + f.getPub_year());
-                System.out.println("Handling:\n" + f.getStoryline());
-            } else {
-                System.out.println("Utgitt: " + f.getPub_year());
-
-                for (Film f : episodes) {
-                    System.out.println("Lengde: " + f.getRunlength() + " min");
-                    System.out.println("Handling:\n" + f.getStoryline());
-                }
-            }
-        } catch (Exception e) {
-            System.out.println(e);
+    public Series seriesLookup(String name) throws Exception {
+        Series s = Series.get("title='" + name + "'");
+        System.out.println("\n" + s.getTitle());
+        System.out.println("Eies av: " + s.getCompany().getName());
+        System.out.println(s.getID());
+        List<Film> episodes = s.getEpisodes();
+        if (episodes.isEmpty()) {
+            System.out.println("Ingen episoder ennå.");
         }
+        else if (s.isMovie()) {
+            Film f = episodes.get(0);
+            System.out.println("Lengde: " + f.getRunlength() + " min");
+            System.out.println("Utgitt: " + f.getPub_year());
+            System.out.println("Handling:\n" + f.getStoryline());
+
+            System.out.println("\nRegissert av\n---------");
+            f.getDirectors().stream().forEach(p -> System.out.println(p.getName()));
+            System.out.println("\nSkrevet av\n-----------");
+            f.getWriters().stream().forEach(p -> System.out.println(p.getName()));
+            System.out.println("\nRoller\n-----------");
+            f.getActors().stream().forEach(r -> System.out.println(r));
+            
+        } else {
+            System.out.println("Utgitt fra " + episodes.get(0).getPub_year() + " til " + episodes.get(episodes.size() - 1).getPub_year());
+
+            for (Film f : episodes) {
+                System.out.println("Lengde: " + f.getRunlength() + " min");
+                System.out.println("Handling:\n" + f.getStoryline());
+            }
+        }
+        return s;
     }
 
     public void finish() {

@@ -172,7 +172,7 @@ public class Film extends ActiveDomainObject{
             while (rs.next()) {
                 Person p = Person.get("person_id=" + rs.getInt("person_id"));
                 res.add(
-                    new Role(this, p, rs.getString("role"))
+                    new Role(this, p, rs.getString("role_name"))
                 );
             }
         } catch (SQLException e) {
@@ -189,7 +189,7 @@ public class Film extends ActiveDomainObject{
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
-                Person p = new Person(rs.getInt("person_id"), rs.getString("name"), rs.getDate("birthdate"), rs.getString("country"));
+                Person p = Person.get("person_id=" + rs.getInt("person_id"));
                 res.add(p);
             }
         } catch (SQLException e) {
@@ -212,7 +212,7 @@ public class Film extends ActiveDomainObject{
      */
     public void addActor(Person p, String role) {
         try {
-            PreparedStatement stmt = conn.prepareStatement("insert into RoleBy (person_id, film_id, _role) values (?, ?, ?)");
+            PreparedStatement stmt = conn.prepareStatement("insert into RoleBy (person_id, film_id, role_name) values (?, ?, ?)");
             stmt.setInt(1, p.getID());
             stmt.setInt(2, this.ID);
             stmt.setString(3, role);

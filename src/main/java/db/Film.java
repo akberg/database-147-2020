@@ -159,6 +159,14 @@ public class Film extends ActiveDomainObject{
         this.runlength = runlength;
     }
 
+    public int getEpisode() {
+        return episode;
+    }
+
+    public int getSeason() {
+        return season;
+    }
+
     /**
      * Get all actors and roles registered on this film
      * @return

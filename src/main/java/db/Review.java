@@ -27,4 +27,9 @@ public class Review {
     public String getComment(){
         return this.comment;
     }
+
+    @Override
+    public String toString() {
+        return user.getUsername() + " ga " + rating + " poeng: \"" + comment + "\"";
+    }
 }

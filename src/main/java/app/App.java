@@ -1,6 +1,5 @@
 package app;
 
-import java.sql.Date;
 import java.sql.SQLException;
 import java.util.Scanner;
 
@@ -47,6 +46,8 @@ public final class App {
                     break;
                 case 2:
                     seriesFilmView();
+                case 3:
+                    categoryView();
                 default:
                     break;
             }
@@ -130,8 +131,13 @@ public final class App {
             case 1:
                 seriesFilmView();
                 break;
-        
+            case 2:
+                // Add episode
             default:
+                int offset = 2;
+                if (offset < x && x - offset < s.getEpisodes().size()) {
+                    filmView(s.getEpisodes().get(x - offset));
+                }
                 break;
         }
 
@@ -139,48 +145,78 @@ public final class App {
         // Choices
         System.out.println(i++ +") Tilbake");
         System.out.println(i++ +") Søk på en annen serie eller film");
-        System.out.println(i++ +") ");
+        System.out.println(i++ +") Legg til episode");
+        for (Film f : s.getEpisodes())
+            System.out.println(i++ +") Se detaljer om episode "+f.getEpisode()+" sesong "+f.getSeason()+" - "+f.getTitle());
 
         x = getChoice();
     }
 
     public static void filmView(Film f) {
         int x = -1;
-        switch (x) {
-            case 1:
-                seriesFilmView();
-                break;
-        
-            default:
-                break;
+        while (x != 0) {
+            switch (x) {
+                case 1:
+                    seriesFilmView();
+                    break;
+                case 2:
+                    System.out.println("Brukernavn:");
+                    String username = in.nextLine();
+                    User u;
+                    try {
+                        u = User.get("username=" + username);
+                    } catch(Exception e) {
+                        System.out.println("Bruker " + username + " finnes ikke, oppretter ny bruker.");
+                        u = new User(username);
+                        u.save();
+                    }
+                    int rating = -1;
+                    while (rating < 1 || 5 < rating) {
+                        System.out.println("Gi en vurdering (1-5):");
+                        rating = getChoice();
+                    }
+
+                    System.out.println("Gi en begrunnelse (én linje):");
+                    String comment = in.nextLine();
+                    ctrl.addReview(f, u, rating, comment);
+                default:
+                    break;
+            }
+
+            int i = 0;
+            // Choices
+            System.out.println(i++ +") Tilbake");
+            System.out.println(i++ +") Søk på en annen serie eller film");
+            System.out.println(i++ +") Skriv anmeldelse");
+
+            x = getChoice();
         }
-
-        int i = 0;
-        // Choices
-        System.out.println(i++ +") Tilbake");
-        System.out.println(i++ +") Søk på en annen serie eller film");
-        System.out.println(i++ +") ");
-
-        x = getChoice();
     }
 
     public static void categoryView() {
         int x = 1;
-        switch (x) {
-            case 1:
-                System.out.println("Søk på en kategori:");
-                ctrl.categoryLookup(in.nextLine());
-                break;
-        
-            default:
-                break;
+        while (x != 0) {
+            switch (x) {
+                case 1:
+                    System.out.println("Søk på en kategori:");
+                    try {
+                        ctrl.categoryLookup(in.nextLine());
+                        break;
+                    } catch (Exception e) {
+                        System.out.println("Det skjedde en feil: " + e);
+                        homeView();
+                    }
+            
+                default:
+                    break;
+            }
+
+            int i = 0;
+            // Choices
+            System.out.println(i++ +") Tilbake");
+            System.out.println(i++ +") Søk på en annen kategori");
+
+            x = getChoice();
         }
-
-        int i = 0;
-        // Choices
-        System.out.println(i++ +") Tilbake");
-        System.out.println(i++ +") Søk på en annen kategori");
-
-        x = getChoice();
     }
 }

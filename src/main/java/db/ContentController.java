@@ -111,7 +111,10 @@ public class ContentController extends DBConn {
             System.out.println("\nSkrevet av\n-----------");
             f.getWriters().stream().forEach(p -> System.out.println(p.getName()));
             System.out.println("\nRoller\n-----------");
-            f.getActors().stream().forEach(r -> System.out.println(r));
+            f.getActors().stream().forEach(System.out::println);
+
+            System.out.println("\nAnmeldelser\n----------------");
+            f.getReviews().stream().forEach(System.out::println);
             
         } else {
             System.out.println("Utgitt fra " + episodes.get(0).getPub_year() + " til " + episodes.get(episodes.size() - 1).getPub_year());
@@ -121,7 +124,38 @@ public class ContentController extends DBConn {
                 System.out.println("Handling:\n" + f.getStoryline());
             }
         }
+        finish();
         return s;
+    }
+
+    public Category categoryLookup(String name) throws Exception {
+        Category c = Category.get("cat_name='" + name + "'");
+        System.out.println(c.getCat_name());
+        System.out.println("\nFilmer i denne kategorien:\n---------------------------------");
+        c.getTagged().stream().forEach(s -> System.out.println(s.getTitle()));
+        System.out.println("\nTopselskaper i denne kategorien\n--------------------------------------");
+
+        // SQL spørring for å telle antall filmer i kategorien for hvert selskap
+        // GROUP BY comp_id for å telle antall til hvert selskap
+        PreparedStatement stmt = conn.prepareStatement(
+            "SELECT COUNT(title) AS num, comp_id "+
+            "FROM Category NATURAL JOIN Tag NATURAL JOIN Series "+
+            "WHERE cat_name='" + name + "' "+
+            "GROUP BY comp_id "+
+            "ORDER BY num desc;"
+        );
+        ResultSet rs = stmt.executeQuery();
+        while (rs.next()) {
+            Company comp = Company.get("comp_id=" + rs.getInt("comp_id"));
+            System.out.println(comp.getName() + ": " + rs.getInt("num") + " filmer eller serier");
+        }
+        finish();
+        return c;
+    }
+
+    public void addReview(Film f, User u, int rating, String comment) {
+        f.addReview(u, rating, comment);
+        finish();
     }
 
     public void finish() {

@@ -1,6 +1,8 @@
 package db;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 public class Category extends ActiveDomainObject {
@@ -23,7 +25,7 @@ public class Category extends ActiveDomainObject {
         return cat_name;
     }
 
-    public Category get(String constraint) {
+    public static Category get(String constraint) {
         Category res;
         try {
             Statement stmt = conn.createStatement();
@@ -45,6 +47,23 @@ public class Category extends ActiveDomainObject {
             System.out.println("Feil under databaseoperasjon "+e);
             return null;
         }
+    }
+
+    /**
+     * Get all Series (movie or series) tagged with this category
+     * @return list of Series
+     */
+    public List<Series> getTagged() throws Exception {
+        List<Series> series = new ArrayList<>();
+        PreparedStatement stmt = conn.prepareStatement("select * from Film natural join Tag where cat_id=" + this.getID());
+        ResultSet rs = stmt.executeQuery();
+
+        while (rs.next()) {
+            series.add(
+                Series.get("series_id=" + rs.getInt("series_id"))
+            );
+        }
+        return series;
     }
 
     @Override

@@ -11,6 +11,14 @@ public class User extends ActiveDomainObject {
         this.ID = id;
         this.username = username;
     }
+    public User (String username) {
+        this.ID = -1;
+        this.username = username;
+    }
+
+    public String getUsername() {
+        return username;
+    }
     
     /**
      * Get a User object matching the given constraints
@@ -21,29 +29,23 @@ public class User extends ActiveDomainObject {
      */
     public static User get(String constraint) throws NoSuchElementException, SQLException {
         User res;
-        try {
-            Statement stmt = conn.createStatement();
-            // Select all from an object satisfying contstraints
-            ResultSet rs = stmt.executeQuery("select * from User where " + constraint);
+        Statement stmt = conn.createStatement();
+        // Select all from an object satisfying contstraints
+        ResultSet rs = stmt.executeQuery("select * from UserProfile where " + constraint);
 
-            if (!rs.next()) {
-                throw new NoSuchElementException("Ingen treff.");
-            } 
-            res = new User(
-                rs.getInt("user_id"),
-                rs.getString("username")
-            );
+        if (!rs.next()) {
+            throw new NoSuchElementException("Ingen treff.");
+        } 
+        res = new User(
+            rs.getInt("user_id"),
+            rs.getString("username")
+        );
 
-            if (rs.next()) {
-                throw new NoSuchElementException("Mer enn ett treff!");
-            }
-
-            return res;
-
-        } catch (SQLException e) {
-            System.out.println("Feil under databaseoperasjon "+e);
-            return null;
+        if (rs.next()) {
+            throw new NoSuchElementException("Mer enn ett treff!");
         }
+
+        return res;
     }
 
     @Override

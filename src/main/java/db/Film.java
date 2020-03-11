@@ -123,6 +123,10 @@ public class Film extends ActiveDomainObject{
 
     }
 
+    public boolean isEpisode() {
+        return isEpisode;
+    }
+
     public int getPub_year() {
         return pub_year;
     }

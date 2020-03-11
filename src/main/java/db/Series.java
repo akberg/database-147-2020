@@ -50,10 +50,9 @@ public class Series extends ActiveDomainObject {
     }
 
     public List<Film> getEpisodes() {
-        // TODO: implement!
         List<Film> res = new ArrayList<>();
         try {
-            PreparedStatement stmt = conn.prepareStatement("select * from RoleBy where person_id=" + this.ID);
+            PreparedStatement stmt = conn.prepareStatement("select * from Film where series_id=" + this.ID);
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
@@ -61,7 +60,7 @@ public class Series extends ActiveDomainObject {
                 res.add(f);
             }
         } catch (SQLException e) {
-            System.out.println("Feil under databaseoperasjon: " + e);
+            System.out.println("Feil under databaseoperasjon Series.java:64: " + e);
         }
         return res;
     }

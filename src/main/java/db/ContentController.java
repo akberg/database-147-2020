@@ -100,7 +100,25 @@ public class ContentController extends DBConn {
             System.out.println("\n" + s.getTitle());
             System.out.println("Eies av: " + s.getCompany().getName());
 
-            List<Film> episodes = Series.getEpisodes();
+            List<Film> episodes = s.getEpisodes();
+            if (episodes.isEmpty()) {
+                System.out.println("Ingen episoder ennå.");
+            }
+            else if (episodes.size() == 1 && !episodes.get(0).isEpisode()) {
+                Film f = episodes.get(0);
+                System.out.println("Lengde: " + f.getRunlength() + " min");
+                System.out.println("Utgitt: " + f.getPub_year());
+                System.out.println("Handling:\n" + f.getStoryline());
+            } else {
+                System.out.println("Utgitt: " + f.getPub_year());
+
+                for (Film f : episodes) {
+                    System.out.println("Lengde: " + f.getRunlength() + " min");
+                    System.out.println("Handling:\n" + f.getStoryline());
+                }
+            }
+        } catch (Exception e) {
+            System.out.println(e);
         }
     }
 

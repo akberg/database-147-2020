@@ -32,11 +32,11 @@ public class Series extends ActiveDomainObject {
 
     public boolean isMovie() {
         if (movie != null) {
-            return (boolean)movie;
+            return (boolean) movie;
         } else {
             List<Film> episodes = getEpisodes();
             movie = episodes.size() == 1 && !episodes.get(0).isEpisode();
-            return (boolean)movie;
+            return (boolean) movie;
         }
     }
 
@@ -74,6 +74,23 @@ public class Series extends ActiveDomainObject {
             System.out.println("Feil under databaseoperasjon Series.java:64: " + e);
         }
         return res;
+    }
+
+    public boolean hasEpisode(int season, int episode) {
+        try {
+            PreparedStatement stmt = conn.prepareStatement(
+                "select count(*) as num from Film where series_id=? and episode=? and season=?");
+            stmt.setInt(1, this.ID);
+            stmt.setInt(2, season);
+            stmt.setInt(3, episode);
+            ResultSet rs = stmt.executeQuery();
+            rs.next();
+            return 1 == rs.getInt("num");
+        } catch (SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return false;
+        }
     }
 
     public static Series get(String constraint) throws SQLException {

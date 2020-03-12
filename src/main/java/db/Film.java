@@ -23,6 +23,7 @@ public class Film extends ActiveDomainObject {
 
     // Constructors
 
+    // Load from db
     public Film(int id, int series_id, String title, int pub_year, Date pub_date, String storyline, int runlength,
             boolean isEpisode, int season, int episode) {
         if (series_id == -1) {
@@ -69,16 +70,6 @@ public class Film extends ActiveDomainObject {
         this(-1, series_id, title, pub_year, pub_date, storyline, runlength, true, season, episode);
     }
 
-    // public Film(int id, Series s, String title, int pub_year, Date pub_date,
-    // String storyline, int runlength) {
-    // this(s.getID(), title, pub_year, pub_date, storyline, runlength);
-    // }
-
-    // public Film(Series s, String title, int pub_year, Date pub_date, String
-    // storyline, int runlength) {
-    // this(-1, s.getID(), title, pub_year, pub_date, storyline, runlength);
-    // }
-
     public Film(int id) {
         this.ID = id;
     }
@@ -86,6 +77,8 @@ public class Film extends ActiveDomainObject {
     public Film() {
         this.ID = -1;
     }
+
+    // Getters and Setters
 
     public int getSeries_id() {
         return series_id;
@@ -267,7 +260,7 @@ public class Film extends ActiveDomainObject {
      */
     public void addWriter(Person p) {
         try {
-            PreparedStatement stmt = conn.prepareStatement("insert into Written (person_id, film_id) values (?, ?)");
+            PreparedStatement stmt = conn.prepareStatement("insert into WrittenBy (person_id, film_id) values (?, ?)");
             stmt.setInt(1, p.getID());
             stmt.setInt(2, this.ID);
             stmt.execute();

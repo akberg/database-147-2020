@@ -52,9 +52,22 @@ public class ContentController extends DBConn {
         p.save();
     }
 
-    public Person getPerson(String name) throws SQLException {
-        Person p = Person.get("name=" + name);
-        return p;
+    public Person getPerson(String name) {
+        try {
+            return Person.get("full_name='" + name + "'");
+        } catch (SQLException e) {
+            System.out.println("Fant ingen person, skrev du riktig navn?");
+            return null;
+        }
+    }
+
+    public Company getCompany(String name) {
+        try {
+            return Company.get("comp_name='" + name + "'");
+        } catch (SQLException e) {
+            System.out.println("Fant ingen selskap, skrev du riktig navn?");
+            return null;
+        }
     }
 
     public void insertCompany(String name, String country, String address, String url) {
@@ -83,12 +96,7 @@ public class ContentController extends DBConn {
         System.out.println("Født: " + p.getBirthdate());
         System.out.println("Filmer:\n---------------------------------------------");
         p.getFilmsAsActor().stream().forEach(r -> {
-            try {
-                System.out.println(r.getRole() + "\t| " + r.getFilm().getTitle());
-            } catch (SQLException e) {
-                System.out.println("Det skjedde en feil!"+e);
-                e.printStackTrace();
-            }
+            System.out.println(r.getRole() + "\t| " + r.getFilm().getTitle());
         });
         return p;
     }
@@ -97,7 +105,6 @@ public class ContentController extends DBConn {
         Series s = Series.get("title='" + name + "'");
         System.out.println("\n" + s.getTitle());
         System.out.println("Eies av: " + s.getCompany().getName());
-        System.out.println(s.getID());
         List<Film> episodes = s.getEpisodes();
         if (episodes.isEmpty()) {
             System.out.println("Ingen episoder ennå.");

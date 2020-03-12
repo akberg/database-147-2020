@@ -22,17 +22,47 @@ public final class App {
     }
 
     public static void main(String[] args) {
+        String dbHost;
+        String dbName;
+        String dbUser;
+        String dbPassword;
         // Get db credentials
-        System.out.println("Host: localhost");
-        String dbHost = "localhost"; // in.nextLine();
-        System.out.println("Database name: moviedb");
-        String dbName = "moviedb"; // in.nextLine();
-        System.out.println("Username: root");
-        String dbUser = "root"; // in.nextLine();
-        System.out.println("Password: ****");
-        String dbPassword = "3619"; // in.nextLine();
+        if (args.length > 0) {
+            try {
+                dbHost = args[0];
+                dbName = args[1];
+                dbUser = args[2];
+                dbPassword = args[3];
+                ctrl = new ContentController(dbHost, dbName, dbUser, dbPassword);
+            } catch (Exception e) {
+                System.out.println("Det skjedde en feil. Forventede argumenter er <vert> <database> <bruker> <passord>");
+                System.out.println("Sørg også for å ha en database etter vedlagt skript ferdig laget.");
+                System.exit(0);
+            }
+        } else {
+            try {
+                System.out.println("Host: localhost");
+                dbHost = "localhost"; 
+                dbHost = in.nextLine();
+                System.out.println("Database name: moviedb");
+                dbName = "moviedb"; 
+                dbName = in.nextLine();
+                System.out.println("Username: root");
+                dbUser = "root"; 
+                dbUser = in.nextLine();
+                System.out.println("Password: ****");
+                dbPassword = "3619"; 
+                dbPassword = in.nextLine();
+                ctrl = new ContentController(dbHost, dbName, dbUser, dbPassword);
+            } catch (Exception e) {
+                System.out.println("Det skjedde en feil, vennligst prøv igjen");
+                main(args);
+            }
+            
+        }
 
-        ctrl = new ContentController(dbHost, dbName, dbUser, dbPassword);
+        
+
 
         homeView();
     }

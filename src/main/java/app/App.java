@@ -35,9 +35,12 @@ public final class App {
                 dbPassword = args[3];
                 ctrl = new ContentController(dbHost, dbName, dbUser, dbPassword);
             } catch (Exception e) {
-                System.out.println("Det skjedde en feil. Forventede argumenter er <vert> <database> <bruker> <passord>");
-                System.out.println("Sørg også for å ha en database etter vedlagt skript ferdig laget.");
-                System.exit(0);
+                System.out.println(e);
+                e.printStackTrace();
+                // System.out.println("Det skjedde en feil. Forventede argumenter er <vert> <database> <bruker> <passord>");
+                // System.out.println("Sørg også for å ha en database etter vedlagt skript ferdig laget.");
+                // System.out.println("" + e + e.getStackTrace());
+                // System.exit(0);
             }
         } else {
             try {
@@ -55,8 +58,11 @@ public final class App {
                 dbPassword = in.nextLine();
                 ctrl = new ContentController(dbHost, dbName, dbUser, dbPassword);
             } catch (Exception e) {
-                System.out.println("Det skjedde en feil, vennligst prøv igjen");
-                main(args);
+                System.out.println(e);
+                e.printStackTrace();
+                // System.out.println("Det skjedde en feil, vennligst prøv igjen");
+                // System.out.println("" + e + e.getStackTrace());
+                // main(args);
             }
             
         }

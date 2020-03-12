@@ -24,6 +24,7 @@
             <version>8.0.19</version>
         </dependency>
     </dependencies>
+
     <build>
         <pluginManagement>
             <plugins>
@@ -48,6 +49,37 @@
                         <includeTestSourceDirectory>true</includeTestSourceDirectory>
                     </configuration>
                 </plugin>
+
+                <plugin>
+                <!-- Build an executable JAR -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.1.0</version>
+                <configuration>
+                    <archive>
+                    <manifest>
+                        <addClasspath>true</addClasspath>
+                        <classpathPrefix>lib/</classpathPrefix>
+                        <mainClass>app.App</mainClass>
+                    </manifest>
+                    </archive>
+                </configuration>
+                </plugin>
+
+                <!-- Includes the runtime dependencies -->
+                <plugin>
+                    <groupId>org.dstovall</groupId>
+                    <artifactId>onejar-maven-plugin</artifactId>
+                    <version>1.4.4</version>
+                    <executions>
+                    <execution>
+                        <goals>
+                            <goal>one-jar</goal>
+                        </goals>
+                    </execution>
+                    </executions>
+                </plugin>
+
             </plugins>
         </pluginManagement>
         <plugins>
@@ -67,6 +99,15 @@
             </plugin>
         </plugins>
     </build>
+
+    <!-- One-Jar is in the googlecode repository -->
+    <pluginRepositories>
+        <pluginRepository>
+            <id>onejar-maven-plugin.googlecode.com</id>
+            <url>http://onejar-maven-plugin.googlecode.com/svn/mavenrepo</url>
+        </pluginRepository>
+    </pluginRepositories>
+
     <reporting>
         <plugins>
             <plugin>

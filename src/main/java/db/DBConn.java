@@ -13,6 +13,7 @@ public abstract class DBConn {
     public void connect(String host, String db, String user, String password) {
     	try {
             //Class.forName("com.mysql.jdbc.Driver").newInstance();
+            System.out.println("Laster inn driver");
             Class.forName("com.mysql.cj.jdbc.Driver").newInstance(); //when you are using MySQL 8.0.     
         
 	        // Properties for user and password.

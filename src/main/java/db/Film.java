@@ -270,6 +270,24 @@ public class Film extends ActiveDomainObject {
     }
 
     /**
+     * Get all music used as soundtrack in this film
+     * 
+     * Fetched from Soundtrack table
+     * @return list of Music objects
+     */
+    public List<Music> getSoundtrack() {
+        // TODO: implement
+    }
+    
+    /**
+     * Add music to soundtrack
+     * @param m Music to be added
+     */
+    public void addMusic(Music m) {
+        // TODO: implement
+    } 
+
+    /**
      * Get all reviews of a Film
      * @return
      */

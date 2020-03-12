@@ -46,16 +46,16 @@ public final class App {
             try {
                 System.out.println("Host: localhost");
                 dbHost = "localhost"; 
-                dbHost = in.nextLine();
+                //dbHost = in.nextLine();
                 System.out.println("Database name: moviedb");
                 dbName = "moviedb"; 
-                dbName = in.nextLine();
+                //dbName = in.nextLine();
                 System.out.println("Username: root");
                 dbUser = "root"; 
-                dbUser = in.nextLine();
+                //dbUser = in.nextLine();
                 System.out.println("Password: ****");
                 dbPassword = "3619"; 
-                dbPassword = in.nextLine();
+                //dbPassword = in.nextLine();
                 ctrl = new ContentController(dbHost, dbName, dbUser, dbPassword);
             } catch (Exception e) {
                 System.out.println(e);
@@ -84,7 +84,7 @@ public final class App {
                     seriesFilmView();
                     break;
                 case 3:
-                    categoryView();
+                    categoryView(1);
                     break;
                 case 4:
                     personView(2);
@@ -95,6 +95,8 @@ public final class App {
                 case 6:
                     seriesView(null, 3);
                     break;
+                case 7:
+                    musicView(2);
                 default:
                     break;
             }
@@ -112,11 +114,35 @@ public final class App {
             System.out.println(i++ + ") Legg til person");
             System.out.println(i++ + ") Legg til spillefilm");
             System.out.println(i++ + ") Legg til serie");
+            System.out.println(i++ + ") Legg til musikk");
 
             x = getChoice();
         }
 
         System.exit(0);
+    }
+
+    private static void musicView(int x) {
+        Music m;
+        //while (x != 0) {
+            switch (x) {
+                case 2:
+                    // Add music
+                    System.out.println("Tittel på musikk:");
+                    String title = in.nextLine();
+                    System.out.println("Komponert eller skrevet av:");
+                    String composer = in.nextLine();
+                    System.out.println("Fremført av:");
+                    String performer = in.nextLine();
+                    ctrl.addMusic(title, composer, performer);
+
+                    System.out.println("La til " + title + " av " + composer + " i databasen");
+                    break;
+            
+                default:
+                    break;
+            }
+        //}
     }
 
     public static void personView(int x) {
@@ -242,6 +268,8 @@ public final class App {
                         f.getDirectors().stream().forEach(p -> System.out.println(p.getName()));
                         System.out.println("\nSkrevet av\n-----------");
                         f.getWriters().stream().forEach(p -> System.out.println(p.getName()));
+                        System.out.println("\nMusikk\n-------------");
+                        f.getSoundtrack().stream().forEach(System.out::println);
                         System.out.println("\nRoller\n-----------");
                         f.getActors().stream().forEach(System.out::println);
 
@@ -375,6 +403,20 @@ public final class App {
                         homeView();
                     }
                     break;
+                case 7: // Add soundtrack
+                    Music m = null;
+                    while (m == null) {
+                        System.out.println("Musikkstykke:");
+                        m = ctrl.getMusic(in.nextLine());
+                    } 
+                    f.addMusic(m);
+                    try {
+                        ctrl.seriesLookup(f.getSeries().getTitle());
+                    } catch (Exception e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                        homeView();
+                    }
                 default:
                     break;
             }
@@ -388,13 +430,13 @@ public final class App {
             System.out.println(i++ +") Legg til regissør");
             System.out.println(i++ +") Legg til forfatter");
             System.out.println(i++ +") Legg til skuespiller");
+            System.out.println(i++ +") Legg til musikk");
 
             x = getChoice();
         }
     }
 
-    public static void categoryView() {
-        int x = 1;
+    public static void categoryView(int x) {
         while (x != 0) {
             switch (x) {
                 case 1:

@@ -37,15 +37,18 @@ public class ContentController extends DBConn {
      * @param runlength
      * @throws SQLException
      */
+    @Deprecated
     public void insertMovie(String title, int pub_year, Date pub_date, String storyline, int runlength)
             throws SQLException {
         // TODO: implement
         Film f;
     }
 
+    @Deprecated
     void insertEpisode() {
         // TODO: implement
     }
+    // insertMovie og insertEpisode ikke i bruk, kom til skade for å implementere dem i App.java
 
     public void insertPerson(String name, String country, Date birthdate) throws SQLException {
         Person p = new Person(name, birthdate, country);
@@ -69,6 +72,16 @@ public class ContentController extends DBConn {
             return null;
         }
     }
+
+	public Music getMusic(String title) {
+		try {
+            System.out.println("title='" + title + "'");
+            return Music.get("title='" + title + "'");
+        } catch (SQLException e) {
+            System.out.println("Fant ingen musikk, skrev du riktig navn?");
+            return null;
+        }
+	}
 
     public void insertCompany(String name, String country, String address, String url) {
         Company c = new Company(name, country, address, url);
@@ -119,6 +132,8 @@ public class ContentController extends DBConn {
             f.getDirectors().stream().forEach(p -> System.out.println(p.getName()));
             System.out.println("\nSkrevet av\n-----------");
             f.getWriters().stream().forEach(p -> System.out.println(p.getName()));
+            System.out.println("\nMusikk\n-------------");
+            f.getSoundtrack().stream().forEach(System.out::println);
             System.out.println("\nRoller\n-----------");
             f.getActors().stream().forEach(System.out::println);
 
@@ -169,6 +184,11 @@ public class ContentController extends DBConn {
         finish();
     }
 
+    public void addMusic(String title, String composer, String performer) {
+        Music m = new Music(title, composer, performer);
+        m.save();
+    }
+
     public void finish() {
         try {
             conn.commit();
@@ -177,4 +197,6 @@ public class ContentController extends DBConn {
             return;
         }
     }
+
+
 }

@@ -276,7 +276,19 @@ public class Film extends ActiveDomainObject {
      * @return list of Music objects
      */
     public List<Music> getSoundtrack() {
-        // TODO: implement
+        List<Music> res = new ArrayList<>();
+        try {
+            PreparedStatement stmt = conn.prepareStatement("select * from Soundtrack where film_id=" + this.ID);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                res.add(Music.get("music_id=" + rs.getInt("music_id"))
+                );
+            }
+        } catch (SQLException e) {
+            System.out.println("Feil under databaseoperasjon: " + e);
+        }
+        return res;
     }
     
     /**
@@ -284,7 +296,14 @@ public class Film extends ActiveDomainObject {
      * @param m Music to be added
      */
     public void addMusic(Music m) {
-        // TODO: implement
+        try {
+            PreparedStatement stmt = conn.prepareStatement("insert into Soundtrack (film_id, music_id) values (?, ?)");
+            stmt.setInt(1, this.ID);
+            stmt.setInt(2, m.getID());
+            stmt.execute();
+        } catch (SQLException e) {
+            System.out.println("Feil under databaseoperasjon: " + e);
+        }
     } 
 
     /**

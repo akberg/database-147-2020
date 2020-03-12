@@ -52,14 +52,6 @@ public class ContentController extends DBConn {
     public void insertPerson(String name, String country, Date birthdate) throws SQLException {
         Person p = new Person(name, birthdate, country);
         p.save();
-        // PreparedStatement stmt = conn.prepareStatement(
-        //     "insert into Person (full_name, country, birthdate) values (?, ?, ?);"
-        // );
-        // stmt.setString(1, name);
-        // stmt.setString(2, country);
-        // stmt.setDate(3, birthdate);
-        // stmt.execute();
-        // conn.commit();
     }
 
     public Person getPerson(String name) throws SQLException {
@@ -119,9 +111,11 @@ public class ContentController extends DBConn {
         } else {
             System.out.println("Utgitt fra " + episodes.get(0).getPub_year() + " til " + episodes.get(episodes.size() - 1).getPub_year());
 
+            System.out.println("Episoder:\n---------------------");
             for (Film f : episodes) {
+                System.out.println("E"+f.getEpisode()+"S"+f.getSeason()+": "+f.getTitle());
                 System.out.println("Lengde: " + f.getRunlength() + " min");
-                System.out.println("Handling:\n" + f.getStoryline());
+                System.out.println("Handling:\n" + f.getStoryline() + "\n");
             }
         }
         finish();

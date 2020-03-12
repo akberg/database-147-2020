@@ -44,7 +44,7 @@ public class Series extends ActiveDomainObject {
         return comp_id;
     }
 
-    public Company getCompany() {
+    public Company getCompany() throws SQLException {
         return Company.get("comp_id=" + comp_id);
     }
 
@@ -76,32 +76,26 @@ public class Series extends ActiveDomainObject {
         return res;
     }
 
-    public static Series get(String constraint) {
+    public static Series get(String constraint) throws SQLException {
         Series res;
-        try {
-            Statement stmt = conn.createStatement();
-            // Select all from an object satisfying contstraints
-            ResultSet rs = stmt.executeQuery("select * from Series where " + constraint);
+        Statement stmt = conn.createStatement();
+        // Select all from an object satisfying contstraints
+        ResultSet rs = stmt.executeQuery("select * from Series where " + constraint);
 
-            if (!rs.next()) {
-                throw new NoSuchElementException("Ingen treff.");
-            }
-            res = new Series(
-                rs.getInt("series_id"),
-                rs.getInt("comp_id"),
-                rs.getString("title")
-            );
-
-            if (rs.next()) {
-                throw new NoSuchElementException("Mer enn ett treff!");
-            }
-
-            return res;
-
-        } catch (SQLException e) {
-            System.out.println("Feil under databaseoperasjon: " + e);
-            return null;
+        if (!rs.next()) {
+            throw new SQLException("Ingen treff.");
         }
+        res = new Series(
+            rs.getInt("series_id"),
+            rs.getInt("comp_id"),
+            rs.getString("title")
+        );
+
+        if (rs.next()) {
+            throw new SQLException("Mer enn ett treff!");
+        }
+
+        return res;
     }
 
     @Override

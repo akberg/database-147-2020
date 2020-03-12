@@ -57,36 +57,36 @@ public class Company extends ActiveDomainObject {
         this.url = url;
     }
     
-    public static Company get(String constraint) {
+
+    public static Company get(String constraint) throws SQLException {
         Company res;
-        try {
-            Statement stmt = conn.createStatement();
-            // Select all from an object satisfying contstraints
-            ResultSet rs = stmt.executeQuery("select * from Company where " + constraint);
+        Statement stmt = conn.createStatement();
+        // Select all from an object satisfying contstraints
+        ResultSet rs = stmt.executeQuery("select * from Company where " + constraint);
 
-            if (!rs.next()) {
-                throw new NoSuchElementException("Ingen treff.");
-            } 
-            res = new Company(
-                rs.getInt("comp_id"),
-                rs.getString("comp_name"),
-                rs.getString("country"),
-                rs.getString("address"),
-                rs.getString("url")
-            );
+        if (!rs.next()) {
+            throw new NoSuchElementException("Ingen treff.");
+        } 
+        res = new Company(
+            rs.getInt("comp_id"),
+            rs.getString("comp_name"),
+            rs.getString("country"),
+            rs.getString("address"),
+            rs.getString("url")
+        );
 
-            if (rs.next()) {
-                throw new NoSuchElementException("Mer enn ett treff!");
-            }
-
-            return res;
-
-        } catch (SQLException e) {
-            System.out.println("Feil under databaseoperasjon "+e);
-            return null;
+        if (rs.next()) {
+            throw new NoSuchElementException("Mer enn ett treff!");
         }
+
+        return res;
     }
 
+    /**
+     * Save object to database
+     * 
+     * Inserts object if ID=-1, otherwise updates the entry with id=ID
+     */
     @Override
     public void save() {
         try {

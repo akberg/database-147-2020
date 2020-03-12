@@ -1,9 +1,10 @@
 package db;
 
 /**
- * Film review
+ * Film review (relation) by a user
  */
 public class Review {
+
     private Film film;
     private User user;
     private int rating;
@@ -13,8 +14,11 @@ public class Review {
         this.film = film;
         this.user = user;
         this.rating = rating;
-        this.review_text = review_text;
+        this.review_text = comment;
     }
+
+    // Getters
+
     public Film getFilm() {
         return this.film;
     }
@@ -30,6 +34,6 @@ public class Review {
 
     @Override
     public String toString() {
-        return user.getUsername() + " ga " + rating + " poeng: \"" + comment + "\"";
+        return user.getUsername() + " ga " + rating + " poeng: \"" + review_text + "\"";
     }
 }

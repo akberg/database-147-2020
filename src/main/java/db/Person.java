@@ -3,8 +3,12 @@ package db;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 
+/**
+ * Person model
+ * 
+ * A person can appear in a film as director, writer or actor
+ */
 public class Person extends ActiveDomainObject {
 
     private String full_name;
@@ -60,7 +64,7 @@ public class Person extends ActiveDomainObject {
 
     /**
      * Get all movies where person has appeared in an acting role
-     * @return
+     * @return list of Role objects
      */
     public List<Role> getFilmsAsActor() {
         List<Role> res = new ArrayList<>();
@@ -83,8 +87,10 @@ public class Person extends ActiveDomainObject {
     /**
      * Get all movies where person has appeared in as director or writer
      * Called by the public methods getFilmAsDirector and getFilmAsWriter
-     * @table director or writer
-     * @return
+     * 
+     * @param table 'director' or 'writer' is set by the public methods
+     * getFilmAsDirector and getFilmAsWriter
+     * @return list of Film objects
      */
     private List<Film> getFilm(String table) {
         List<Film> res = new ArrayList<>();
@@ -112,38 +118,36 @@ public class Person extends ActiveDomainObject {
      * Get a Person object matching the given constraints
      * @param constraint an expression e.g. "person_id=1"
      * @return object of type Person
-     * @throws NoSuchElementException if there were no or mutliple matches
-     * @throws SQLException database error
+     * @throws SQLException database error or if there were no or mutliple matches
      */
-    public static Person get(String constraint) throws NoSuchElementException, SQLException {
+    public static Person get(String constraint) throws SQLException {
         Person res;
-        try {
-            Statement stmt = conn.createStatement();
-            // Select all from an object satisfying contstraints
-            ResultSet rs = stmt.executeQuery("select * from Person where " + constraint);
+        Statement stmt = conn.createStatement();
+        // Select all from an object satisfying contstraints
+        ResultSet rs = stmt.executeQuery("select * from Person where " + constraint);
 
-            if (!rs.next()) {
-                throw new NoSuchElementException("Ingen treff.");
-            } 
-            res = new Person(
-                rs.getInt("person_id"),
-                rs.getString("full_name"),
-                rs.getDate("birthdate"),
-                rs.getString("country")
-            );
+        if (!rs.next()) {
+            throw new SQLException("Ingen treff.");
+        } 
+        res = new Person(
+            rs.getInt("person_id"),
+            rs.getString("full_name"),
+            rs.getDate("birthdate"),
+            rs.getString("country")
+        );
 
-            if (rs.next()) {
-                throw new NoSuchElementException("Mer enn ett treff!");
-            }
-
-            return res;
-
-        } catch (SQLException e) {
-            System.out.println("Feil under databaseoperasjon "+e);
-            return null;
+        if (rs.next()) {
+            throw new SQLException("Mer enn ett treff!");
         }
+
+        return res;
     }
 
+    /**
+     * Save object to database
+     * 
+     * Inserts object if ID=-1, otherwise updates the entry with id=ID
+     */
     @Override
     public void save() {
         try {

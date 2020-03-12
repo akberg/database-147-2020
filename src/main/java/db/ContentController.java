@@ -8,18 +8,19 @@ public class ContentController extends DBConn {
 
     /**
      * Create controller with a conected host to add content
+     * 
      * @param host
      * @param db
      * @param user
      * @param password
      */
-    public ContentController (String host, String db, String user, String password) {
+    public ContentController(String host, String db, String user, String password) {
         connect(host, db, user, password);
         // Let creating a film be one transaction
         try {
             conn.setAutoCommit(false);
         } catch (SQLException e) {
-            System.out.println("db error during setAuoCommit of LagAvtaleCtrl="+e);
+            System.out.println("db error during setAuoCommit of LagAvtaleCtrl=" + e);
             return;
         }
         ActiveDomainObject.setConnection(conn);
@@ -27,6 +28,7 @@ public class ContentController extends DBConn {
 
     /**
      * Add movie to database
+     * 
      * @param title
      * @param series_id
      * @param pub_year
@@ -35,19 +37,15 @@ public class ContentController extends DBConn {
      * @param runlength
      * @throws SQLException
      */
-    // public void insertFilm(String title, int pub_year, Date pub_date, String storyline, int runlength) throws SQLException {
-    //     PreparedStatement stmt = conn.prepareStatement(
-    //         "insert into Film (title, series_id, pub_year, pub_date, storyline, runlength) values (?, ?, ?, ?, ?, ?);"
-    //         );
-    //     stmt.setString(1, title);
-    //     stmt.setInt(2, series_id);
-    //     stmt.setInt(3, pub_year);
-    //     stmt.setDate(4, pub_date);
-    //     stmt.setString(5, storyline);
-    //     stmt.setInt(6, runlength);
-    //     stmt.executeUpdate();
-    //     conn.commit();
-    // }
+    public void insertMovie(String title, int pub_year, Date pub_date, String storyline, int runlength)
+            throws SQLException {
+        // TODO: implement
+        Film f;
+    }
+
+    void insertEpisode() {
+        // TODO: implement
+    }
 
     public void insertPerson(String name, String country, Date birthdate) throws SQLException {
         Person p = new Person(name, birthdate, country);
@@ -70,16 +68,28 @@ public class ContentController extends DBConn {
     }
 
     public void testSeriesCompanyFilm() {
-        Film f = new Film("Frozen 2", 2019, new Date(119, 9, 10), "Dobbelt så frossent!", 112, Company.get("comp_name='Disney'").getID());
-        f.save();
+        try {
+            Film f = new Film("Frozen 2", 2019, new Date(119, 9, 10), "Dobbelt så frossent!", 112,
+                    Company.get("comp_name='Disney'").getID());
+            f.save();
+        } catch (SQLException e) {
+            System.out.println("Feil: " + e);
+        }
     }
 
     public Person personLookup(String name) throws Exception {
-        Person p = Person.get("full_name='"+name+"'");
+        Person p = Person.get("full_name='" + name + "'");
         System.out.println("\n" + p.getName());
         System.out.println("Født: " + p.getBirthdate());
         System.out.println("Filmer:\n---------------------------------------------");
-        p.getFilmsAsActor().stream().forEach(r -> System.out.println(r.getRole() + "\t| " + r.getFilm().getTitle()));
+        p.getFilmsAsActor().stream().forEach(r -> {
+            try {
+                System.out.println(r.getRole() + "\t| " + r.getFilm().getTitle());
+            } catch (SQLException e) {
+                System.out.println("Det skjedde en feil!"+e);
+                e.printStackTrace();
+            }
+        });
         return p;
     }
 

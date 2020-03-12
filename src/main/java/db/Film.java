@@ -5,11 +5,10 @@ import java.util.*;
 import java.sql.Date;
 
 /**
- * Film objects represents a feature length movie or an episode
- * Attributes that only the full series would have are managed
- * in Series object
+ * Film objects represents a feature length movie or an episode Attributes that
+ * only the full series would have are managed in Series object
  */
-public class Film extends ActiveDomainObject{
+public class Film extends ActiveDomainObject {
     private int series_id;
     private int pub_year;
     private Date pub_date;
@@ -24,10 +23,11 @@ public class Film extends ActiveDomainObject{
 
     // Constructors
 
-    public Film(int id, int series_id, String title, int pub_year, Date pub_date, String storyline, int runlength, boolean isEpisode, int season, int episode) {
+    public Film(int id, int series_id, String title, int pub_year, Date pub_date, String storyline, int runlength,
+            boolean isEpisode, int season, int episode) {
         if (series_id == -1) {
             throw new IllegalStateException("Serie må være lagret i databasen.");
-        } 
+        }
         this.ID = id;
         this.series_id = series_id;
         this.title = title;
@@ -41,7 +41,8 @@ public class Film extends ActiveDomainObject{
         this.episode = episode;
     }
 
-    public Film(int series_id, String title, int pub_year, Date pub_date, String storyline, int runlength, boolean isEpisode, int season, int episode) {
+    public Film(int series_id, String title, int pub_year, Date pub_date, String storyline, int runlength,
+            boolean isEpisode, int season, int episode) {
         this(-1, series_id, title, pub_year, pub_date, storyline, runlength, isEpisode, season, episode);
     }
 
@@ -56,23 +57,26 @@ public class Film extends ActiveDomainObject{
         this.pub_date = pub_date;
         this.storyline = storyline;
         this.runlength = runlength;
-        
+
         this.isEpisode = false;
         this.season = 0;
         this.episode = 0;
     }
 
     // New episode
-    public Film(String title, int series_id, int season, int episode, int pub_year, Date pub_date, String storyline, int runlength) {
+    public Film(String title, int series_id, int season, int episode, int pub_year, Date pub_date, String storyline,
+            int runlength) {
         this(-1, series_id, title, pub_year, pub_date, storyline, runlength, true, season, episode);
     }
 
-    // public Film(int id, Series s, String title, int pub_year, Date pub_date, String storyline, int runlength) {
-    //     this(s.getID(), title, pub_year, pub_date, storyline, runlength);
+    // public Film(int id, Series s, String title, int pub_year, Date pub_date,
+    // String storyline, int runlength) {
+    // this(s.getID(), title, pub_year, pub_date, storyline, runlength);
     // }
-    
-    // public Film(Series s, String title, int pub_year, Date pub_date, String storyline, int runlength) {
-    //     this(-1, s.getID(), title, pub_year, pub_date, storyline, runlength);
+
+    // public Film(Series s, String title, int pub_year, Date pub_date, String
+    // storyline, int runlength) {
+    // this(-1, s.getID(), title, pub_year, pub_date, storyline, runlength);
     // }
 
     public Film(int id) {
@@ -82,17 +86,23 @@ public class Film extends ActiveDomainObject{
     public Film() {
         this.ID = -1;
     }
-    
+
     public int getSeries_id() {
         return series_id;
     }
 
     /**
      * Get Series object assosiated with Film
+     * 
      * @return Series
      */
     public Series getSeries() {
-        return Series.get("series_id=" + this.series_id);
+        try {
+            return Series.get("series_id=" + this.series_id);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public void setSeries_id(int series_id) {
@@ -111,7 +121,7 @@ public class Film extends ActiveDomainObject{
         }
     }
 
-    public void setTitle(String title) {
+    public void setTitle(String title) throws SQLException {
         if (isEpisode) {
             this.title = title;
         } else {
@@ -292,6 +302,12 @@ public class Film extends ActiveDomainObject{
         return res;
     }
 
+    /**
+     * Add a review to this Film
+     * @param user the user writing the review
+     * @param rating a score ranging from 1 to 5
+     * @param comment additional comment to review
+     */
     public void addReview(User user, int rating, String comment) {
         try {
             PreparedStatement stmt = conn.prepareStatement("insert into Review (film_id, user_id, rating, review_text) values (?, ?, ?, ?)");
@@ -348,6 +364,11 @@ public class Film extends ActiveDomainObject{
         }
     }
 
+    /**
+     * Save object to database
+     * 
+     * Inserts object if ID=-1, otherwise updates the entry with id=ID
+     */
     @Override
     public void save() {
         try {

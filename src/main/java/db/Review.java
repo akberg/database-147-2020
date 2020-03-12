@@ -1,27 +1,27 @@
 package db;
 
-import java.sql.*;
-import java.util.*;
-
-public class Review extends ActiveDomainObject {
-    private int film_id;
-    private int user_id;
+/**
+ * Film review
+ */
+public class Review {
+    private Film film;
+    private User user;
     private int rating;
     private String review_text;
 
-    public Review (int film_id, int user_id, int rating, String review_text) {
-        this.film_id = film_id;
-        this.user_id = user_id;
+    public Review (Film film, User user, int rating, String comment) {
+        this.film = film;
+        this.user = user;
         this.rating = rating;
         this.review_text = review_text;
     }
-    public int getFilmId () {
-        return this.film_id;
+    public Film getFilm() {
+        return this.film;
     }
-    public int getUserId () {
-        return this.user_id;
+    public User getUser() {
+        return this.user;
     }
-    public int getRating () {
+    public int getRating() {
         return this.rating;
     }
     public String getReviewText(){
@@ -29,25 +29,7 @@ public class Review extends ActiveDomainObject {
     }
 
     @Override
-    public void initialize(Connection conn) {
-        // TODO Auto-generated method stub
-
+    public String toString() {
+        return user.getUsername() + " ga " + rating + " poeng: \"" + comment + "\"";
     }
-
-    @Override
-    public void refresh(Connection conn) {
-        // TODO Auto-generated method stub
-        initialize (conn);
-
-    }
-
-    @Override
-    public void save(Connection conn) {
-        // TODO Auto-generated method stub
-
-    }
-    
-    
-
-
 }

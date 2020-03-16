@@ -90,7 +90,7 @@ public final class App {
                     personView(2);
                     break;
                 case 5:
-                    filmView(null, null, 4);
+                    filmView(null, null, 3);
                     break;
                 case 6:
                     seriesView(null, 3);
